@@ -1,10 +1,21 @@
+using Microsoft.Extensions.Hosting;
 using NanoServices;
+using NanoServices.Script;
+using Newtonsoft.Json.Linq;
+using System.Web.Services.Description;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+public class Program
+{
+    public static void Main(string[] args)
     {
-        services.AddHostedService<Worker>();
-    })
-    .Build();
+        CreateHostBuilder(args).Build().Run();
+    }
 
-await host.RunAsync();
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+        .UseWindowsService()
+        .ConfigureServices((hostContext, services) =>
+        {
+            services.AddHostedService<Worker>();
+        });
+}

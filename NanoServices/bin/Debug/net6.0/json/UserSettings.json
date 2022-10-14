@@ -1,0 +1,31 @@
+{
+  "DeviceSettings": {
+    //Zmienna sprawdzająca ile użądzeń jest podpięta
+    "DevicesCountConnect": 1,
+    "Device1": {
+      "Name": "Nano 1",
+      "IP": "10.10.0.194"
+    } //,
+    // Przykład dodawania kolejnego urządzenia
+    //    "Device2": {
+    //      "Name": "",
+    //      "IP": ""
+    //    }
+  },
+
+  "AppSettings": {
+    "IntervalChecker": 2000, //milsec
+    "Alert": {
+      "High": 30,
+      "Low": 10
+    },
+    "Logs": {
+      // wpisanie w scieżce podwojego % spowoduje ze w tym miejscu wpisze date i utworzy nowy plik
+      "Path": "A:\\nano test\\logs%%.txt",
+      // Jakie logi maja byc zapisywane
+      // 0 - all, co kazdy interval
+      // 1 - warning, tylko krytyczne
+      "LogsPioryty": 0
+    }
+  }
+}
