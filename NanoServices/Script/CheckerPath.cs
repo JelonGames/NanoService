@@ -35,7 +35,7 @@ namespace NanoServices.Script
                 FileStream file = File.Create(path);
                 file.Close();
                 StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.UTF8);
-                sw.WriteLine("DATE     PRIOROTY     VALUE");
+                sw.WriteLine("DATE     PRIOROTY     DEVICE     VALUE");
                 sw.Close();
             }
         }

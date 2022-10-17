@@ -7,6 +7,13 @@ namespace NanoServices
     {
         private readonly ILogger<Worker> _logger;
         private static readonly JObject json = JObject.Parse(ReadJson.json);
+        private float temperature;
+        private string actualDevice; //aktualnie wybrane u¿¹dzenie "Nazwa"
+
+        //mailsender propery
+        private bool canSend = true;
+        private int mailCounter = (int)json["MailSettings"]["MailCounter"];
+        private int sendedMail = 0;
 
         public Worker(ILogger<Worker> logger)
         {
@@ -27,32 +34,94 @@ namespace NanoServices
             return base.StopAsync(cancellationToken);
         }
 
+        #region LogsSave
+        private void LogsPiorityZero()
+        {
+            if (temperature > (float)json["AppSettings"]["Alert"]["High"] || temperature < (float)json["AppSettings"]["Alert"]["Low"])
+            {
+                string body = $"{DateTime.Now}     [Warning]     {actualDevice}     {temperature}";
+                _logger.LogInformation(body);
+                SaveLogs.Save(body);
+
+                if (canSend && sendedMail < mailCounter)
+                    SendMail($"ALLERT przekroczenia temperatury krytycznej: \n{body}", (int)json["MailSettings"]["MailIntervalSend"]);
+                else if (canSend)
+                    SendMail($"Aktualny status temperatury: \n{body}", (int)json["MailSettings"]["MailIntervalStatus"]);
+
+            }
+            else
+            {
+                string body = $"{DateTime.Now}     [Info]     {actualDevice}     {temperature}";
+                _logger.LogInformation(body);
+                SaveLogs.Save(body);
+
+                sendedMail = 0;
+            }
+        }
+
+        private void LogsPiorityOne()
+        {
+            if (temperature > (float)json["AppSettings"]["Alert"]["High"] || temperature < (float)json["AppSettings"]["Alert"]["Low"])
+            {
+                string body = $"{DateTime.Now}     [Warning]     {actualDevice}     {temperature}";
+                _logger.LogInformation(body);
+                SaveLogs.Save(body);
+
+                if (canSend && sendedMail < mailCounter)
+                    SendMail($"ALLERT przekroczenia temperatury krytycznej: \n{body}", (int)json["MailSettings"]["MailIntervalSend"]);
+                else if (canSend)
+                    SendMail($"Aktualny status temperatury: \n{body}", (int)json["MailSettings"]["MailIntervalStatus"]);
+            }
+            else
+                sendedMail = 0;
+        }
+        #endregion
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                float temperature;
                 string temperatureString = ReadTemperature.Read(1);
+                actualDevice = (string)json["DeviceSettings"]["Device1"]["Name"];
                 if (!float.TryParse(temperatureString, out temperature))
                 {
-                    _logger.LogInformation($"{DateTime.Now}     [Info]     {temperatureString}");
-                    SaveLogs.Save($"{DateTime.Now}     [Info]     {temperatureString}");
+                    _logger.LogInformation($"{DateTime.Now}     [Warning]     {temperatureString}");
+                    SaveLogs.Save($"{DateTime.Now}     [Warning]     {temperatureString}");
                 }
                 else
                 {
-                    if(temperature > (float)json["AppSettings"]["Alert"]["High"] || temperature < (float)json["AppSettings"]["Alert"]["Low"])
-                    {
-                        _logger.LogInformation($"{DateTime.Now}     [Warning]     {temperature}");
-                        SaveLogs.Save($"{DateTime.Now}     [Warning]     {temperature}");
-                    }
-                    else
-                    {
-                        _logger.LogInformation($"{DateTime.Now}     [Info]     {temperature}");
-                        SaveLogs.Save($"{DateTime.Now}     [Info]     {temperature}");
-                    }
+                    if ((int)json["AppSettings"]["Logs"]["LogsPiority"] == 0)
+                        LogsPiorityZero();
+                    else if((int)json["AppSettings"]["Logs"]["LogsPiority"] == 1)
+                        LogsPiorityOne();
                 }
                 await Task.Delay((int)json["AppSettings"]["IntervalChecker"], stoppingToken);
             }
+        }
+
+        private async Task SendMail(string body, int delay)
+        {
+            canSend = false;
+            sendedMail++;
+            Mail mail = new Mail(new MailParams
+            {
+                Domain = (string)json["MailSettings"]["MailProperty"]["Domain"],
+                HostSmtp = (string)json["MailSettings"]["MailProperty"]["Server"],
+                Port = (int)json["MailSettings"]["MailProperty"]["Port"],
+                EnableSsl = (bool)json["MailSettings"]["MailProperty"]["EnableSSl"],
+                Username = (string)json["MailSettings"]["MailProperty"]["Username"],
+                Login = (string)json["MailSettings"]["MailProperty"]["Login"],
+                Password = (string)json["MailSettings"]["MailProperty"]["Password"]
+            });
+
+            await mail.Send(
+                (string)json["MailSettings"]["MailProperty"]["MailSubject"],
+                body,
+                (string)json["MailSettings"]["MailProperty"]["To"]
+                );
+
+            await Task.Delay(delay);
+            canSend = true;
         }
     }
 }
