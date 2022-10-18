@@ -1,92 +1,193 @@
-# Nano Services
+# Nano Services 
+## Spis treści 
+1. Działanie, instalacja, itp..
+2. Zasoby
+3. Pierwsza pomoc
+# 1. Działanie, instalacja, itp..
+## Działanie
+Usługa pobiera dane z urządzenia pod addresem `address\temp1.txt`. Na stronie znajduję się tylko informacja o temperaturze która została zczytana z urządzenia. Przykładowy sposób na sprawdzenie czy użądzenie wypisuje dobrze temperature `Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content`  Usługa addressy urządzeń pobiera z pliku json `Dokaładny opis w 2. Zasoby`.
+Jeżeli usługa nie będzie wstanie odczytać lub wartość pedzie przekraczać dopuszczalny zakres temperatur, to wyśle mail i w logach pojawi się komunikat `[Warning]`.
+## Instalacja i deinstalacja
+W folderze z aplikacją znajdują się 2 pliki:
+- InstallNanoService.ps1
+- UninstallNanoService.ps1
 
+#### Przed instalacją/deinstalacją
+Przed uruchomieniem którego kolwiek z pliku trzeba najpierw upenić się 
+że mamy odpowiednią politykę.
 
+1. Uruchomienie powershella jako administrator
+2. Wpisać komendę `Set-ExecutionPolicy RemoteSigned -Scope LocalMachine`. Bez tego nie będziecie wstanie uruchomić instalacji.
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+#### Instalacja
+Jeżeli już to zrobimy można przystapic do instalacji.
+W pliku instalacyjnym jest kilka zmiennych definiujące gdzie znajduje się plik i gdzie dodać odpowiednie pliki.
+```ps1
+$nameServices = 'NanoServices'
+#oznacza nazwę usługi
+$pathApp = 'C:\Nano\NanoServices.exe'
+#Ścieżka do aplikacji którą usługa ma uruchomić
+$pathAppSettings = 'C:\Nano\json\UserSettings.json' 
+#Ścieżka do pliku json
+$pathSystem32 = 'C:\Windows\System32\NanoSettings\json' 
+#POD ŻADNYM POZOREM NIE RUSZAĆ BO APLIKACJA NIE BĘDZIE MIAŁA DANYCH DO PRACY
 ```
-cd existing_repo
-git remote add origin http://gitlab.elf.local/serwis-it/nano-services.git
-git branch -M main
-git push -uf origin main
+Ta lokalizacja jest podyktowana zasadą działania usług które działają w obrębie użytkownika root jak również tym jak została ścieżka podana w projekcie.
+```C#
+private static string _json()
+{
+	try
+	{
+		return File.ReadAllText(@"./json/UserSettings.json"); // ścieżka w projekcie w trakcie debugowania
+	}
+	catch
+	{
+		return File.ReadAllText(@"./NanoSettings/json/UserSettings.json"); //ścieżka w systemie dla usługi
+	}
+}
+
+public static string json
+{
+	get { return _json(); }
+}
 ```
 
-## Integrate with your tools
+#### Deinstalacja
+Aby odinstalować usługę trzeba wykonać plik `UninstalNanoServices.ps1`.
+```ps1
+$nameServices = 'NanoServices' 
+#nazwa usługi musi się zdadzać
+$pathSystem32 = 'C:\Windows\System32\NanoSettings'
+#TAK SAMO JAK WYRZEJ TEGO DNIE DOTYKAĆ
+```
+# 2. Zasoby
+Najważniejsze pliki do pracy usługi:
+1. InstallNanoServices.ps1
+2. UnInstallNanoServices.ps1
+3. UserSettings.json
+4. NanoServices.exe
 
-- [ ] [Set up project integrations](http://gitlab.elf.local/serwis-it/nano-services/-/settings/integrations)
+#### 2.1 InstallNanoServices.ps1
+```ps1
+$nameServices = 'NanoServices'
+#oznacza nazwę usługi
+$pathApp = 'C:\Nano\NanoServices.exe'
+#Ścieżka do aplikacji którą usługa ma uruchomić
+$pathAppSettings = 'C:\Nano\json\UserSettings.json' 
+#Ścieżka do pliku json
+$pathSystem32 = 'C:\Windows\System32\NanoSettings\json' 
+#POD ŻADNYM POZOREM NIE RUSZAĆ BO APLIKACJA NIE BĘDZIE MIAŁA DANYCH DO PRACY
 
-## Collaborate with your team
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+#Tworzenie folderu i kopiowanie ustawień do stworzonego folderu
+mkdir -Force $pathSystem32
+cp -Force $pathAppSettings $pathSystem32
 
-## Test and Deploy
 
-Use the built-in continuous integration in GitLab.
+#Towżenie usługi
+sc.exe create $nameServices start= auto binPath= $pathApp
+sc.exe start $nameServices
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+#### 2.2 UninstallNanoServices.ps1
+```ps1
+$nameServices = 'NanoServices' 
+#nazwa usługi musi się zdadzać
+$pathSystem32 = 'C:\Windows\System32\NanoSettings'
+#TAK SAMO JAK WYRZEJ TEGO DNIE DOTYKAĆ
 
-***
+#Usuwanie pliku i katalogu z ustawieniami 
+rmdir -Recurse -Force $pathSystem32
 
-# Editing this README
+#Zatrzymanie usługi i nadanie jej flagi do usunięcia
+sc.exe stop $nameServices
+sc.exe delete $nameServices
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+#Restart komputera, potrzebny jest by usługa się usuneła 
+$value = Read-Host "Czy chcesz uruchomić ponownie komputer w celu dokończenia deinstalacji? (y/n)"
+if ($value -eq 'y')
+{
+    Restart-Computer -Force
+}
+else
+{
+    Write-Output "Usługa została zatrzymana i ustawiona jako 'Do usunięcia'"
+}
+```
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+#### 2.3 UserSettings.json
+W Jsonie można znaleść wszystkie zmienne do konfiguracji usługi. Najlepiej edytować Notepad++ lub innym edytorem programistycznym/specjalistycznym.
+```json
+{
+  "DeviceSettings": {
+    //Zmienna sprawdzająca ile użądzeń jest podpięta
+	  //Jeżeli jest więcej niż jedno urządzenie trzeba zmienić na odpowiednią liczbę
+    "DevicesCountConnect": 1,
+    "Device1": {
+      "Name": "Nano 1",
+      "IP": "10.10.0.194"
+    } //,
+    // Przykład dodawania kolejnego urządzenia
+    //    "Device2": {
+    //      "Name": "",
+    //      "IP": ""
+    //    }
+  },
 
-## Name
-Choose a self-explaining name for your project.
+  "AppSettings": {
+	  //IntervalCheker odpowiada jak często ma usługa sprawdzać temperature na urządzeniu
+	  // !! nie jest to czas jak często ma być wysyłany mail ostrzegawczy
+    "IntervalChecker": 2000, //milsec
+	  // Tutaj ustawiamy granice akceptowalnej temperatury
+    "Alert": {
+      "High": 30,
+      "Low": 10
+    },
+    "Logs": {
+      // wpisanie w scieżce podwojego % spowoduje ze w tym miejscu wpisze date i utworzy nowy plik
+      "Path": "A:\\nano test\\logs%%.txt",
+      // Jakie logi maja byc zapisywane
+      // 0 - wszystkie, co kazdy interval
+      // 1 - o typie warning, tylko krytyczne
+      "LogsPioryty": 0
+    }
+  },
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+  "MailSettings": {
+    "MailProperty": {
+      "Domain": "ELF", //Domena
+      "Server": "hermes.lexus.net.pl", //Serwer pocztowy
+      "Port": 587, //587 lub 25
+      "EnableSSl": true, //szyfrowanie SSL
+      "Username": "", //Wyświetlana nazwa, 
+		//w przypadku autoryzacji maila nie jest wymagane lecz warto podać
+      "Login": "", //login, a dokłanie mail z którego będzie wysyłany mail,
+		//Oraz będzie dokonywana autoryzacja w serwerze pocztowym
+      "Password": "", //w przypadku braku autoryzacji zostawić puste
+      "MailSubject": "Test termometru", //Tytuł maili
+      "To": "" //Na jaką skrzynke ma być wysyłane
+    },
+    "MailCounter": 5, //Ile maili ma przyjść o treści ALLERT
+    "MailIntervalSend": 900000, //milsec - 900 000 = 15 min
+	  //Czas pomiędzy wysłanymi mailami o treści ALLERT
+    "MailIntervalStatus": 1800000 //milsec - 1 800 000 = 30 min
+	  //Czas pomiędzy wysłanymi mailami o treści status
+  }
+}
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+#### 2.4 NanoServices.exe
+Program uruchamiający cała usługę. Znajduję się w gółwnym katalogu programu
+# 3. Pierwsza pomoc
+1. Wykonanie w powershell komendy
+```ps1
+Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content
+```
+Jeżeli komenda wyżuci co kolwiek innego a na podanej stronie w komendzie możemy się bez problemu dostać trzeba zresetować urządzenie (raz w trakcie testów mi się to zdażyło, prawdopodobnie jakieś zwiechy dostało)
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+2. Upewnienie się że usługa działa, jeżeli działa i ani logi ani maile nie przychodzą to:
+	1. Zatrzym usługę
+	2. W powershelu wpisać lokalizację pliku ***exe*** i po spacji dopisać install. Uruchomi się konsla usługi która będzie pracować w ramach zalogowanego użytkownika
+	3. Jeżeli wszystko poprawnie tam działa, logi się zapisują to błąd nie leży po utworzonej usługi
+3. Jeżeli przy próbie uruchomienia usługi pojawia się błąd o numerze 3 lub usługa odpala się błyskawicznie oznacza że albo lokalizajca aplikacji się zmieniła albo źle została utworzona usługa. W tym przypadku należy ponownie ją zainstalować o porawnej ścieżce w pliku `InstallNanoServices.ps1`
+4. Błąd 1053 przy uruchamianiu może być spowodowana albo błędę aplikacji albo błędnie utworzoną usługą.
