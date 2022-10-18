@@ -1,9 +1,13 @@
 {
   "DeviceSettings": {
     //Zmienna sprawdzająca ile użądzeń jest podpięta
-    "DevicesCountConnect": 1,
+    "DevicesCountConnect": 2,
     "Device1": {
       "Name": "Nano 1",
+      "IP": "10.10.0.194"
+    },
+    "Device2": {
+      "Name": "Nano 2",
       "IP": "10.10.0.194"
     } //,
     // Przykład dodawania kolejnego urządzenia
@@ -42,7 +46,7 @@
       "To": "d.adamczak@lexus.net.pl"
     },
     "MailCounter": 5,
-    "MailIntervalSend": 10000, //milsec - 900 000 = 15 min
-    "MailIntervalStatus": 10000 //milsec - 1 800 000 = 30 min
+    "MailIntervalSend": 900000, //milsec - 900 000 = 15 min
+    "MailIntervalStatus": 1800000 //milsec - 1 800 000 = 30 min
   }
 }

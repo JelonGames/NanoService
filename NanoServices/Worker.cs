@@ -9,6 +9,8 @@ namespace NanoServices
         private static readonly JObject json = JObject.Parse(ReadJson.json);
         private float temperature;
         private string actualDevice; //aktualnie wybrane u¿¹dzenie "Nazwa"
+        private int numberActualSelectDevice = 1; //numer aktualnie wybranego urz¹dzenia, 1 to wartoœæ domyœlna dla pierwszego urz¹denia
+        private int allDeviceNumber; //liczba wszystkich urz¹dzeñ
 
         //mailsender propery
         private bool canSend = true;
@@ -24,6 +26,7 @@ namespace NanoServices
         {
             _logger.LogInformation($"{DateTime.Now}    [INFO]     Start Service");
             SaveLogs.Save($"{DateTime.Now}    [INFO]     Start Work");
+            allDeviceNumber = (int)json["DeviceSettings"]["DevicesCountConnect"];
             return base.StartAsync(cancellationToken);
         }
 
@@ -81,8 +84,8 @@ namespace NanoServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                string temperatureString = ReadTemperature.Read(1);
-                actualDevice = (string)json["DeviceSettings"]["Device1"]["Name"];
+                string temperatureString = ReadTemperature.Read(numberActualSelectDevice);
+                actualDevice = (string)json["DeviceSettings"][$"Device{numberActualSelectDevice}"]["Name"];
                 if (!float.TryParse(temperatureString, out temperature))
                 {
                     _logger.LogInformation($"{DateTime.Now}     [Warning]     {temperatureString}");
@@ -95,6 +98,11 @@ namespace NanoServices
                     else if((int)json["AppSettings"]["Logs"]["LogsPiority"] == 1)
                         LogsPiorityOne();
                 }
+
+                numberActualSelectDevice++;
+                if (numberActualSelectDevice > allDeviceNumber)
+                    numberActualSelectDevice = 1;
+
                 await Task.Delay((int)json["AppSettings"]["IntervalChecker"], stoppingToken);
             }
         }
