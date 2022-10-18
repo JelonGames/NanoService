@@ -5,7 +5,7 @@
 3. Pierwsza pomoc
 # 1. Działanie, instalacja, itp..
 ## Działanie
-Usługa pobiera dane z urządzenia pod addresem `address\temp1.txt`. Na stronie znajduję się tylko informacja o temperaturze która została zczytana z urządzenia. Przykładowy sposób na sprawdzenie czy użądzenie wypisuje dobrze temperature `Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content`  Usługa addressy urządzeń pobiera z pliku json `Dokaładny opis w 2. Zasoby`.
+Usługa pobiera dane z urządzenia pod addresem `address/temp1.txt`. Na stronie znajduję się tylko informacja o temperaturze która została zczytana z urządzenia. Przykładowy sposób na sprawdzenie czy użądzenie wypisuje dobrze temperature `Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content`  Usługa addressy urządzeń pobiera z pliku json `Dokaładny opis w 2. Zasoby`.
 Jeżeli usługa nie będzie wstanie odczytać lub wartość pedzie przekraczać dopuszczalny zakres temperatur, to wyśle mail i w logach pojawi się komunikat `[Warning]`.
 ## Instalacja i deinstalacja
 W folderze z aplikacją znajdują się 2 pliki:
