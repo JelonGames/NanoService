@@ -35,11 +35,11 @@
       "Server": "hermes.lexus.net.pl",
       "Port": 587,
       "EnableSSl": true,
-      "Username": "d.adamczak",
-      "Login": "d.adamczak@lexus.net.pl",
-      "Password": "K0stekwystrz@lowyj3lc",
+      "Username": "",
+      "Login": "",
+      "Password": "",
       "MailSubject": "Test termometru",
-      "To": "d.adamczak@lexus.net.pl"
+      "To": ""
     },
     "MailCounter": 5,
     "MailIntervalSend": 900000, //milsec - 900 000 = 15 min

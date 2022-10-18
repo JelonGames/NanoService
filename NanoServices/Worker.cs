@@ -48,7 +48,7 @@ namespace NanoServices
 
                 if (canSend && sendedMail < mailCounter)
                     SendMail($"ALLERT przekroczenia temperatury krytycznej: \n{body}", (int)json["MailSettings"]["MailIntervalSend"]);
-                else if (canSend)
+                else if (canSend && sendedMail >= mailCounter)
                     SendMail($"Aktualny status temperatury: \n{body}", (int)json["MailSettings"]["MailIntervalStatus"]);
 
             }
@@ -72,7 +72,7 @@ namespace NanoServices
 
                 if (canSend && sendedMail < mailCounter)
                     SendMail($"ALLERT przekroczenia temperatury krytycznej: \n{body}", (int)json["MailSettings"]["MailIntervalSend"]);
-                else if (canSend)
+                else if (canSend && sendedMail >= mailCounter)
                     SendMail($"Aktualny status temperatury: \n{body}", (int)json["MailSettings"]["MailIntervalStatus"]);
             }
             else
