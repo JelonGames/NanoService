@@ -16,7 +16,7 @@ namespace NanoServices.Script
             }
             catch
             {
-                return File.ReadAllText(@"./NanoSettings/json/UserSettings.json");
+                return File.ReadAllText(@"C:/Windows/System32/NanoSettings/json/UserSettings.json");
             }
         }
 
