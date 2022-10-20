@@ -32,8 +32,11 @@ namespace NanoServices
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogWarning($"{DateTime.Now}    [Warning]     Stop Service");
-            SaveLogs.Save($"{DateTime.Now}    [Warning]     Stop Service");
+            string body = $"{DateTime.Now}    [Warning]     Stop Service";
+            _logger.LogWarning(body);
+            SaveLogs.Save(body);
+            SendMail(body, (int)json["MailSettings"]["MailIntervalStatus"]);
+
             return base.StopAsync(cancellationToken);
         }
 
@@ -88,8 +91,10 @@ namespace NanoServices
                 actualDevice = (string)json["DeviceSettings"][$"Device{numberActualSelectDevice}"]["Name"];
                 if (!float.TryParse(temperatureString, out temperature))
                 {
-                    _logger.LogInformation($"{DateTime.Now}     [Warning]     {temperatureString}");
-                    SaveLogs.Save($"{DateTime.Now}     [Warning]     {temperatureString}");
+                    string body = $"{DateTime.Now}     [Warning]     {temperatureString}";
+                    _logger.LogInformation(body);
+                    SaveLogs.Save(body);
+                    SendMail($"Sensor nie jest wstanie przeczytaæ wskazanej mu wartoœci {temperatureString} znajduj¹cej siê w tym komunikacie -> {body}", (int)json["MailSettings"]["MailIntervalStatus"]);
                 }
                 else
                 {

@@ -14,14 +14,35 @@
   },
 
   "AppSettings": {
-    "IntervalChecker": 1000, //milsec
+    "IntervalChecker": 2000, //milsec
+    "Alert": {
+      "High": 30,
+      "Low": 10
+    },
     "Logs": {
       // wpisanie w scieżce podwojego % spowoduje ze w tym miejscu wpisze date i utworzy nowy plik
       "Path": "A:\\nano test\\logs%%.txt",
-      // Jakie logi maja byc zapisywane
+      // Jakie logi maja byc zapisywane\
       // 0 - all, co kazdy interval
       // 1 - warning, tylko krytyczne
-      "LogsPioryty": 0
+      "LogsPiority": 0
     }
+  },
+
+  "MailSettings": {
+    "MailProperty": {
+      "Domain": "ELF",
+      "Server": "hermes.lexus.net.pl",
+      "Port": 587,
+      "EnableSSl": true,
+      "Username": "",
+      "Login": "",
+      "Password": "",
+      "MailSubject": "Test termometru",
+      "To": ""
+    },
+    "MailCounter": 5,
+    "MailIntervalSend": 900000, //milsec - 900 000 = 15 min
+    "MailIntervalStatus": 1800000 //milsec - 1 800 000 = 30 min
   }
 }

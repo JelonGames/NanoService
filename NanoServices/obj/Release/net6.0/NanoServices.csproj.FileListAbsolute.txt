@@ -444,3 +444,5 @@ C:\Users\daniel.admin\Desktop\nano-services\NanoServices\bin\Release\net6.0\runt
 C:\Users\daniel.admin\Desktop\nano-services\NanoServices\bin\Release\net6.0\runtimes\win\lib\net6.0\System.Speech.dll
 C:\Users\daniel.admin\Desktop\nano-services\NanoServices\bin\Release\net6.0\runtimes\win\lib\net6.0\System.Threading.AccessControl.dll
 C:\Users\daniel.admin\Desktop\nano-services\NanoServices\bin\Release\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\daniel.admin\Desktop\nano-services\NanoServices\bin\Release\net6.0\InstallNanoService.ps1
+C:\Users\daniel.admin\Desktop\nano-services\NanoServices\bin\Release\net6.0\UninstallNanoService.ps1
