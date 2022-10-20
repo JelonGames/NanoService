@@ -4,24 +4,27 @@
 2. Zasoby
 3. Pierwsza pomoc
 # 1. Działanie, instalacja, itp..
-## Działanie
+## 1.1 Działanie
 Usługa pobiera dane z urządzenia pod addresem `address/temp1.txt`. Na stronie znajduję się tylko informacja o temperaturze która została zczytana z urządzenia. Przykładowy sposób na sprawdzenie czy użądzenie wypisuje dobrze temperature `Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content`  Usługa addressy urządzeń pobiera z pliku json `Dokaładny opis w 2. Zasoby`.
 Jeżeli usługa nie będzie wstanie odczytać lub wartość pedzie przekraczać dopuszczalny zakres temperatur, to wyśle mail i w logach pojawi się komunikat `[Warning]`.
-## Instalacja i deinstalacja
+## 1.2 Instalacja i deinstalacja
+#### 1.2.1 Ważne pliki
 W folderze z aplikacją znajdują się 2 pliki:
 - InstallNanoService.ps1
 - UninstallNanoService.ps1
 
-#### Przed instalacją/deinstalacją
+#### 1.2.2 Przed instalacją/deinstalacją
 Przed uruchomieniem którego kolwiek z pliku trzeba najpierw upenić się 
 że mamy odpowiednią politykę.
 
 1. Uruchomienie powershella jako administrator
 2. Wpisać komendę `Set-ExecutionPolicy RemoteSigned -Scope LocalMachine`. Bez tego nie będziecie wstanie uruchomić instalacji.
 
-#### Instalacja
-Jeżeli już to zrobimy można przystapic do instalacji.
-W pliku instalacyjnym jest kilka zmiennych definiujące gdzie znajduje się plik i gdzie dodać odpowiednie pliki.
+Istenieje jeszcze opcja zainstalowania `patrz 1.2.3` lub odinstalowania `patrz 1.2.4` przez PowerShell ISE.
+
+#### 1.2.3 Instalacja
+Jeżeli wykonaliśmy punkt `1.2.2`:
+1. Musimy edytować zmienne w pliku `InstallNanoService.ps1` zgodnie z komnetarzami w kodzie poniżej \\/
 ```ps1
 $nameServices = 'NanoServices'
 #oznacza nazwę usługi
@@ -32,17 +35,19 @@ $pathAppSettings = 'C:\Nano\json\UserSettings.json'
 $pathSystem32 = 'C:\Windows\System32\NanoSettings\json' 
 #POD ŻADNYM POZOREM NIE RUSZAĆ BO APLIKACJA NIE BĘDZIE MIAŁA DANYCH DO PRACY
 ```
-Ta lokalizacja jest podyktowana zasadą działania usług które działają w obrębie użytkownika root jak również tym jak została ścieżka podana w projekcie.
+Lokalizacja w zmiennej `$pathSystem32` jest podyktowana czytaniem pliku ustawień json.
 ```C#
 private static string _json()
 {
 	try
 	{
-		return File.ReadAllText(@"./json/UserSettings.json"); // ścieżka w projekcie w trakcie debugowania
+		return File.ReadAllText(@"./json/UserSettings.json"); 
+		//ścieżka w projekcie w trakcie debugowania
 	}
 	catch
 	{
-		return File.ReadAllText(@"./NanoSettings/json/UserSettings.json"); //ścieżka w systemie dla usługi
+		return File.ReadAllText(@"C:/Windows/System32/NanoSettings/json/UserSettings.json"); 
+		//ścieżka w systemie dla usługi
 	}
 }
 
@@ -51,15 +56,19 @@ public static string json
 	get { return _json(); }
 }
 ```
-
-#### Deinstalacja
-Aby odinstalować usługę trzeba wykonać plik `UninstalNanoServices.ps1`.
+2. Można instalator uruchomić albo za pomocą PowerShell podając do niego ściężkę. Jeśli jednak dostaniemy informację "Odmowa dostępu" to można wykonać to z PowerShell ISE i tam go uruchomić.
+ 
+#### 1.2.4 Deinstalacja
+W celu odinstalowania usługi trzeba:
+1. W pliku `UninstallNanoService.ps1` trzeba edytować nazwę usługi na nazwę pod którą została zainstalowana.
 ```ps1
 $nameServices = 'NanoServices' 
 #nazwa usługi musi się zdadzać
 $pathSystem32 = 'C:\Windows\System32\NanoSettings'
-#TAK SAMO JAK WYRZEJ TEGO DNIE DOTYKAĆ
+#TA SAMA ZASADA CO W PULKCIE 1.2.3
 ```
+2. Można deinstalator uruchomić albo za pomocą PowerShell podając do niego ściężkę. Jeśli jednak dostaniemy informację "Odmowa dostępu" to można wykonać to z PowerShell ISE i tam go uruchomić.
+
 # 2. Zasoby
 Najważniejsze pliki do pracy usługi:
 1. InstallNanoServices.ps1
@@ -183,11 +192,12 @@ Program uruchamiający cała usługę. Znajduję się w gółwnym katalogu progr
 ```ps1
 Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content
 ```
-Jeżeli komenda wyżuci co kolwiek innego a na podanej stronie w komendzie możemy się bez problemu dostać trzeba zresetować urządzenie (raz w trakcie testów mi się to zdażyło, prawdopodobnie jakieś zwiechy dostało)
+Jeżeli komenda zwróci co kolwiek innego a na podanej stronie w komendzie możemy się bez problemu dostać trzeba zresetować urządzenie (raz w trakcie testów mi się to zdażyło, prawdopodobnie jakieś zwiechy dostało)
 
-2. Upewnienie się że usługa działa, jeżeli działa i ani logi ani maile nie przychodzą to:
+2. Jeżeli przy próbie uruchomienia usługi pojawia się błąd o numerze 3 lub usługa odpala się błyskawicznie oznacza że albo lokalizajca aplikacji się zmieniła albo źle została utworzona usługa. W tym przypadku należy ponownie ją zainstalować o porawnej ścieżce w pliku `InstallNanoServices.ps1`
+3. Błąd 1053 przy uruchamianiu może być spowodowana albo błędem aplikacji albo błędnie utworzoną usługą.
+4. Błąd 1067 oznacza że aplikacja próbuję dostać się do zasobu do którego nie ma dostępu np. UserSettings.json lub to katalogu gdzie zapisywane są logi.
+5. Upewnienie się że usługa działa, jeżeli działa i ani logi ani maile nie przychodzą to:
 	1. Zatrzym usługę
 	2. W powershelu wpisać lokalizację pliku ***exe*** i po spacji dopisać install. Uruchomi się konsla usługi która będzie pracować w ramach zalogowanego użytkownika
 	3. Jeżeli wszystko poprawnie tam działa, logi się zapisują to błąd nie leży po utworzonej usługi
-3. Jeżeli przy próbie uruchomienia usługi pojawia się błąd o numerze 3 lub usługa odpala się błyskawicznie oznacza że albo lokalizajca aplikacji się zmieniła albo źle została utworzona usługa. W tym przypadku należy ponownie ją zainstalować o porawnej ścieżce w pliku `InstallNanoServices.ps1`
-4. Błąd 1053 przy uruchamianiu może być spowodowana albo błędę aplikacji albo błędnie utworzoną usługą.
