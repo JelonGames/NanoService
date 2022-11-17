@@ -5,7 +5,7 @@
 3. Pierwsza pomoc
 # 1. Działanie, instalacja, itp..
 ## 1.1 Działanie
-Usługa pobiera dane z urządzenia pod addresem `address/temp1.txt`. Na stronie znajduję się tylko informacja o temperaturze która została zczytana z urządzenia. Przykładowy sposób na sprawdzenie czy użądzenie wypisuje dobrze temperature `Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content`  Usługa addressy urządzeń pobiera z pliku json `Dokaładny opis w 2. Zasoby`.
+Usługa pobiera dane z urządzenia pod addresem `address/temp1.txt`. Na stronie znajduję się tylko informacja o temperaturze która została zczytana z urządzenia. Przykładowy sposób na sprawdzenie czy użądzenie wypisuje dobrze temperature `Invoke-WebRequest "ipUrządzenia/temp1.txt" | Select-Object -ExpandProperty Content`  Usługa addressy urządzeń pobiera z pliku json `Dokaładny opis w 2. Zasoby`.
 Jeżeli usługa nie będzie wstanie odczytać lub wartość pedzie przekraczać dopuszczalny zakres temperatur, to wyśle mail i w logach pojawi się komunikat `[Warning]`.
 ## 1.2 Instalacja i deinstalacja
 #### 1.2.1 Ważne pliki
@@ -134,7 +134,7 @@ W Jsonie można znaleść wszystkie zmienne do konfiguracji usługi. Najlepiej e
     "DevicesCountConnect": 1,
     "Device1": {
       "Name": "Nano 1",
-      "IP": "10.10.0.194"
+      "IP": ""
     } //,
     // Przykład dodawania kolejnego urządzenia
     //    "Device2": {
@@ -164,8 +164,8 @@ W Jsonie można znaleść wszystkie zmienne do konfiguracji usługi. Najlepiej e
 
   "MailSettings": {
     "MailProperty": {
-      "Domain": "ELF", //Domena
-      "Server": "hermes.lexus.net.pl", //Serwer pocztowy
+      "Domain": "", //Domena
+      "Server": "", //Serwer pocztowy
       "Port": 587, //587 lub 25
       "EnableSSl": true, //szyfrowanie SSL
       "Username": "", //Wyświetlana nazwa, 
@@ -190,7 +190,7 @@ Program uruchamiający cała usługę. Znajduję się w gółwnym katalogu progr
 # 3. Pierwsza pomoc
 1. Wykonanie w powershell komendy
 ```ps1
-Invoke-WebRequest "10.10.0.194/temp1.txt" | Select-Object -ExpandProperty Content
+Invoke-WebRequest "ipUrządenia/temp1.txt" | Select-Object -ExpandProperty Content
 ```
 Jeżeli komenda zwróci co kolwiek innego a na podanej stronie w komendzie możemy się bez problemu dostać trzeba zresetować urządzenie (raz w trakcie testów mi się to zdażyło, prawdopodobnie jakieś zwiechy dostało)
 

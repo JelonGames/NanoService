@@ -9159,11 +9159,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\daniel.admin\\Desktop\\nano-services\\NanoServices\\NanoServices.csproj",
+      "projectUniqueName": "C:\\Users\\d.adamczak\\Desktop\\Animizowany\\nano-services\\NanoServices\\NanoServices.csproj",
       "projectName": "NanoServices",
-      "projectPath": "C:\\Users\\daniel.admin\\Desktop\\nano-services\\NanoServices\\NanoServices.csproj",
+      "projectPath": "C:\\Users\\d.adamczak\\Desktop\\Animizowany\\nano-services\\NanoServices\\NanoServices.csproj",
       "packagesPath": "C:\\Users\\d.adamczak\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\daniel.admin\\Desktop\\nano-services\\NanoServices\\obj\\",
+      "outputPath": "C:\\Users\\d.adamczak\\Desktop\\Animizowany\\nano-services\\NanoServices\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

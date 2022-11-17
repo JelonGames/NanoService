@@ -4,7 +4,7 @@
     "DevicesCountConnect": 1,
     "Device1": {
       "Name": "Nano 1",
-      "IP": "10.10.0.194"
+      "IP": ""
     } //,
     // Przykład dodawania kolejnego urządzenia
     //    "Device2": {
@@ -31,8 +31,8 @@
 
   "MailSettings": {
     "MailProperty": {
-      "Domain": "ELF",
-      "Server": "hermes.lexus.net.pl",
+      "Domain": "",
+      "Server": "",
       "Port": 587,
       "EnableSSl": true,
       "Username": "",

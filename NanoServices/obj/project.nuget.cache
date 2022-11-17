@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Hf4NFWNWdOb2aE0LkL5afprpvZzfNZcRTj9HcW1LHbUchGikKUhIMwh7z/mCP6x+XCm5zQH/Z0pIhev7FbR+QQ==",
+  "dgSpecHash": "x+2t5ZQARgmjnDMOy4KpGL33YR+OKg9AAOQIh3bPMiFalw4PxOvwWePDkgGftuw4gBBVV1SbeBfctN01HKDNsA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\daniel.admin\\Desktop\\nano-services\\NanoServices\\NanoServices.csproj",
+  "projectFilePath": "C:\\Users\\d.adamczak\\Desktop\\Animizowany\\nano-services\\NanoServices\\NanoServices.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\d.adamczak\\.nuget\\packages\\markdig.signed\\0.22.0\\markdig.signed.0.22.0.nupkg.sha512",
     "C:\\Users\\d.adamczak\\.nuget\\packages\\microsoft.applicationinsights\\2.18.0\\microsoft.applicationinsights.2.18.0.nupkg.sha512",
